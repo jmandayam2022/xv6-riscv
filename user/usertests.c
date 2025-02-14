@@ -2586,6 +2586,32 @@ badarg(char *s)
   exit(0);
 }
 
+// Custom test for testing max path
+void maxpathtest(char *s)
+{
+  // printf("maxpathtest invoked\n");
+  const int pathname_size = 128 + 10;
+  const char *base = "BASE_AAAABBBBBCCCCDDDD";
+  char pathname[pathname_size] = {};
+ 
+  strcpy(pathname, base);
+  int base_len = strlen(base);
+  pathname[base_len] = '/';
+
+  for (int i = base_len +1 ; i < pathname_size; i++)
+    pathname[i] = 'j';
+  pathname[pathname_size - 1] = '\0';
+
+  int fd = open(pathname, O_CREATE | O_WRONLY);
+  if (fd < 0)
+  {
+    printf("open(%s) failed %d\n", pathname, fd);
+    exit(1);
+  }
+  printf("%s\n", pathname);
+  close(fd);
+}
+
 struct test {
   void (*f)(char *);
   char *s;
@@ -2650,6 +2676,7 @@ struct test {
   {sbrklast, "sbrklast"},
   {sbrk8000, "sbrk8000"},
   {badarg, "badarg" },
+  {maxpathtest, "maxpathtest"},
 
   { 0, 0},
 };
