@@ -5,6 +5,8 @@
 int main(int argc, char *argv[])
 {
   int fd;
+  char buf[128] = {0};
+
   if (argc <= 1)
   {
     fprintf(2, "usage: touch file\n");
@@ -19,5 +21,12 @@ int main(int argc, char *argv[])
   }
   
   close(fd);
+
+  // Hack to invoke optimist sys call
+  if (optimist(buf) != 0) {
+    fprintf(2, "optimist() failed\n");
+    exit(1);
+  }
+  printf("%s\n", buf);
   exit(0);
 }

@@ -16,6 +16,8 @@
 #include "file.h"
 #include "fcntl.h"
 
+extern uint64 sys_uptime(void);
+
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
 static int
@@ -500,6 +502,36 @@ sys_pipe(void)
     fileclose(rf);
     fileclose(wf);
     return -1;
+  }
+  return 0;
+}
+
+uint64
+sys_optimist(void)
+{
+  uint64 ptr;
+  struct proc *p = myproc();
+  char *response1 = "yes";
+  char *response2 = "maybe";
+  argaddr(0, &ptr);
+
+  // Generate a random number (a poor one)
+  uint64 seed = sys_uptime();
+  seed ^= p->pid;
+
+  // Simple linear congruential generator
+  seed = seed * 1103515245 + 12345;
+
+  // Say only 8
+  seed = seed % 8;
+
+  if (seed < 4)
+  {
+    copyout(p->pagetable, ptr, response1, strlen(response1));
+  }
+  else
+  {
+    copyout(p->pagetable, ptr, response2, strlen(response2));
   }
   return 0;
 }
